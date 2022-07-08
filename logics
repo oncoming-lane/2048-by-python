@@ -1,0 +1,107 @@
+import random
+
+def trans(m):
+    res = []
+    for i in range(len(m[0])):
+        buf = []
+        for row in m:
+            buf.append(row[i])
+        res.append(buf)
+    return res
+
+
+
+def pretty_print(mas):
+    print('-'*10)
+    for r in mas:
+        print(*r)
+    print('-' * 10)
+
+#получить номер элемента по индексам
+def get_number_for_index(i, j):
+    return i * 4 + j + 1
+
+#получить индекс элемента по его номеру
+def get_index_for_namber(n):
+    n = n - 1
+    return n//4, n%4
+
+#вставить 2 или 4 случайным образом
+#на конкретное место в массиве
+def insert_2_or_4(mas, x, y):
+    if random.random()<=0.75:
+        mas[x][y] = 2
+    else:
+        mas[x][y] = 4
+
+#получить список номеров пустых ячеек массива
+def get_empty_list(mas):
+    empty = []
+    for i in range(4):
+        for j in range(4):
+            if mas[i][j] == 0:
+                num = get_number_for_index(i, j)
+                empty += [num]
+    return empty
+
+#проверить наличие пустых ячеек в массиве
+def is_0_in_mas(mas):
+    for r in mas:
+        if 0 in r:
+            return 1
+    return 0
+
+
+def move_left(mas):
+    delta = 0
+    for r in mas:
+        while 0 in r:
+            r.remove(0)
+        while len(r) < 4:
+            r.append(0)
+    for i in range(4):
+        for j in range(3):
+            if mas[i][j] == mas[i][j+1] and mas[i][j] != 0:
+                delta += mas[i][j]
+                mas[i][j] *= 2
+                mas[i].pop(j+1)
+                mas[i].append(0)
+    return mas, delta
+
+
+def move_right(mas):
+    delta = 0
+    for r in mas:
+        while 0 in r:
+            r.remove(0)
+        while len(r) < 4:
+            r.insert(0, 0)
+    for i in range(4):
+        for j in range(3, 0, -1):
+            if mas[i][j] == mas[i][j-1] and mas[i][j] != 0:
+                delta += mas[i][j]
+                mas[i][j] *= 2
+                mas[i].pop(j-1)
+                mas[i].insert(0,0)
+    return mas, delta
+
+
+def move_up(mas):
+    mas = trans(mas)
+    mas, delta = move_left(mas)
+    mas = trans(mas)
+    return mas, delta
+
+
+def move_down(mas):
+    mas = trans(mas)
+    mas, delta = move_right(mas)
+    mas = trans(mas)
+    return mas, delta
+
+def can_move(mas):
+    for i in range(3):
+        for j in range(3):
+            if mas[i][j] == mas[i][j+1] or mas[i][j] == mas[i+1][j]:
+                return 1
+    return 0
